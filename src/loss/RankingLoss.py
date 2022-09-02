@@ -11,6 +11,7 @@ import torch.nn.functional as F
 
 
 def calculate_similarity(image_embedding, text_embedding):
+    #这个地方计算的就是 cos 相似度      向量点乘的结果 与 cos相似度 就差了一个标准化
     image_embedding = image_embedding.view(image_embedding.size(0), -1)
     text_embedding = text_embedding.view(text_embedding.size(0), -1)
     image_embedding_norm = image_embedding / (image_embedding.norm(dim=1, keepdim=True) + 1e-8)
@@ -53,6 +54,8 @@ class CRLoss(nn.Module):
         return np.random.choice(negative_index) if len(negative_index) > 0 else None
 
     def get_triplets(self, similarity, labels, auto_margin_flag, margin):
+        
+        #这里形成三元组的操作 可以适应不规则的similarity矩阵 长方形的也行 但是要注意 长方形就没有对角线了 而且 这里对于pos的选择要修改
 
         similarity = similarity.cpu().data.numpy()
 
